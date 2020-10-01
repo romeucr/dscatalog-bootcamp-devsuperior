@@ -12,8 +12,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rcrdev.dscatalog.dto.CategoryDTO;
 import com.rcrdev.dscatalog.dto.ProductDTO;
+import com.rcrdev.dscatalog.entities.Category;
 import com.rcrdev.dscatalog.entities.Product;
+import com.rcrdev.dscatalog.repositories.CategoryRepository;
 import com.rcrdev.dscatalog.repositories.ProductRepository;
 import com.rcrdev.dscatalog.services.exceptions.DatabaseException;
 import com.rcrdev.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -23,6 +26,9 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository repository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 
 	@Transactional(readOnly = true)
 	public Page<ProductDTO> findAllPaged(PageRequest pageRequest) {
@@ -44,7 +50,7 @@ public class ProductService {
 	@Transactional
 	public ProductDTO insert(ProductDTO dto) {
 		Product entity = new Product();
-		//entity.setName(dto.getName());
+		copyDtoToEntity(dto, entity);
 		entity = repository.save(entity);
 		return new ProductDTO(entity);
 	}
@@ -54,8 +60,8 @@ public class ProductService {
 
 		try {
 			Product entity = repository.getOne(id); // .getOne() dont touch the DB. Instantiates a provisory object
-														// with that ID. Just touch the DB when to save
-			//entity.setName(dto.getName());
+													// with that ID. Just touch the DB when to save
+			copyDtoToEntity(dto, entity);
 			entity = repository.save(entity);
 			return new ProductDTO(entity);
 		} catch (EntityNotFoundException e) {
@@ -68,8 +74,24 @@ public class ProductService {
 			repository.deleteById(id);
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id not found.");
-		} catch (DataIntegrityViolationException e) { // integrity. in case that there are products with the category, cant be deleted
+		} catch (DataIntegrityViolationException e) { // integrity. in case that there are products with the category,
+														// cant be deleted
 			throw new DatabaseException("Integrity violaton.");
+		}
+	}
+	
+	private void copyDtoToEntity(ProductDTO dto, Product entity) {
+		entity.setName(dto.getName());
+		entity.setDescription(dto.getDescription());
+		entity.setDate(dto.getDate());
+		entity.setImgUrl(dto.getImgUrl());
+		entity.setPrice(dto.getPrice());
+		
+		entity.getCategories().clear(); // to clear categories in case that it has something
+		
+		for (CategoryDTO catDto : dto.getCategories()) {
+			Category category = categoryRepository.getOne(catDto.getId());
+			entity.getCategories().add(category);
 		}
 	}
 
