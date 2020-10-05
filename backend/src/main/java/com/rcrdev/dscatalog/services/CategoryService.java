@@ -58,6 +58,7 @@ public class CategoryService {
 			entity.setName(dto.getName());
 			entity = repository.save(entity);
 			return new CategoryDTO(entity);
+			
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found:" + id);
 		}
@@ -66,8 +67,10 @@ public class CategoryService {
 	public void delete(Long id) {
 		try {
 			repository.deleteById(id);
+			
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id not found.");
+			
 		} catch (DataIntegrityViolationException e) { // integrity. in case that there are products with the category, cant be deleted
 			throw new DatabaseException("Integrity violaton.");
 		}

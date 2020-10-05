@@ -80,6 +80,7 @@ public class ProductService {
 		}
 	}
 	
+	// used to transform and DTO into Entity, avoiding to have to do entity.setXXX every time. 
 	private void copyDtoToEntity(ProductDTO dto, Product entity) {
 		entity.setName(dto.getName());
 		entity.setDescription(dto.getDescription());
