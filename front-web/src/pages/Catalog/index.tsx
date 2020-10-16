@@ -5,6 +5,7 @@ import './styles.scss';
 import { makeRequest } from 'core/utils/request';
 import { ProductsResponse } from 'core/types/Product';
 import ProductCardLoader from './components/Loaders/ProductCardLoader';
+import Pagination from 'core/components/Pagination';
 
 const Catalog = () => {
    //quando o componente iniciar, buscar lista de produtos
@@ -13,15 +14,16 @@ const Catalog = () => {
    //popular um estado do componenente e listar os produtos dinamicamente
    //para executar algo quando o componente iniciar (abrir pagina catalog).
    const [productsResponse, setProductsResponse] = useState<ProductsResponse>();
-
    const [isLoading, setIsLoading] = useState(false);
+
+   const [activePage, setActivePage] = useState(0);
 
    //useEffect react hook (funcao) para acessar ciclo de vida do componente. primeiro uma function(), que faz alguma coisa e uma lista [] de dependencias. 
    //Vazia para realizar alguma coisa assim que o componente iniciar
    useEffect(() => {
       const params = {
-         page: 0,
-         linesPerPage: 8
+         page: activePage,
+         linesPerPage: 4 //quantidade de items que mostra na tela
       }
 
       //Acessando a API: em package.json foi colocada a config "proxy": "http://localhost:8080", para evitar o problema de CORS ao fazer as requisicoes a API 
@@ -32,7 +34,7 @@ const Catalog = () => {
          .finally(() => {
             setIsLoading(false); //finalizando o loader
          })
-   }, []);
+   }, [activePage]);
 
    return (
       <div className="catalog-container">
@@ -48,6 +50,15 @@ const Catalog = () => {
                ))
             )}
          </div>
+         {productsResponse && (
+            <Pagination 
+               totalPages={productsResponse.totalPages}
+               activePage={activePage}
+               onChange={page => setActivePage(page)}
+            />
+         )}
+         {/* se houver productResponse, mostra paginacao */}
+
       </div>
    )
 };
