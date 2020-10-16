@@ -11,18 +11,18 @@ const NavBar = () => (
       </div>
       <div className="col-6 offset-4">
          <ul className="main-menu">
-            <li>
-               <NavLink to="/" activeClassName="active" exact>
+            <li> {/* //Navlink adiciona automaticamente a classe active quando un link é clicado. Assim basta estilizar com o css */}
+               <NavLink to="/" exact> 
                   HOME
                </NavLink>
             </li>
             <li>
-               <NavLink to="/products" activeClassName="active">
+               <NavLink to="/products">
                   Catálogo
                </NavLink>
             </li>
             <li>
-               <NavLink to="/admin" activeClassName="active">
+               <NavLink to="/admin">
                   Admin
                </NavLink>
             </li>
