@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "tb_user")
-public class User  implements Serializable {
+public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -23,10 +25,12 @@ public class User  implements Serializable {
 	private Long id;
 	private String firstName;
 	private String lastName;
+	
+	@Column(unique = true)
 	private String email;
 	private String password;
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER) //always that gets an user form DB, the roles also will be returned. Obligatory for SpringSecurity
 	@JoinTable (name = "tb_user_role",
 			joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @ JoinColumn(name = "role_id"))
