@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rcrdev.dscatalog.dto.RoleDTO;
 import com.rcrdev.dscatalog.dto.UserDTO;
 import com.rcrdev.dscatalog.dto.UserInsertDTO;
+import com.rcrdev.dscatalog.dto.UserUpdateDTO;
 import com.rcrdev.dscatalog.entities.Role;
 import com.rcrdev.dscatalog.entities.User;
 import com.rcrdev.dscatalog.repositories.RoleRepository;
@@ -61,7 +62,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserDTO update(Long id, UserDTO dto) {
+	public UserDTO update(Long id, UserUpdateDTO dto) {
 		try {
 			User entity = repository.getOne(id); // .getOne() dont touch the DB. Instantiates a provisory object
 													// with that ID. Just touch the DB when to save
