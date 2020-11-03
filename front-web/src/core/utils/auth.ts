@@ -15,3 +15,10 @@ type LoginResponse = {
 export const saveSessionData = (loginResponse: LoginResponse) => {
    localStorage.setItem('authData', JSON.stringify(loginResponse)); //stringfy transforma o objeto em string
 }
+
+export const getSessionData = () => {
+   const sessionData = localStorage.getItem('authData') ?? '{}'; //se nao encontra no localstorage o authdata, retorna um objeto vazio. O operador de coalescencia ?? executa a direita quando o valor da esquerda for null ou undefined
+   const parsedSessionData = JSON.parse(sessionData);
+
+   return parsedSessionData as LoginResponse; //type casting. Transforma o objeto que era do tipo any para um LoginResponse
+}

@@ -13,7 +13,7 @@ type FormData = {
 }
 
 const Login = () => {
-   const { register, handleSubmit } = useForm<FormData>(); // initialize the hook form
+   const { register, handleSubmit, errors } = useForm<FormData>(); // initialize the hook form
    const [hasError, setHasError] = useState(false);
    const history = useHistory();
 
@@ -23,15 +23,15 @@ const Login = () => {
             setHasError(false);
             saveSessionData(response.data);
             history.push('/admin');
-         }) 
+         })
          .catch(() => {
             setHasError(true);
          })
-   }  
+   }
 
    return (
       <AuthCard title="login">
-         {/* //conteudo daqui será o children do componente */}
+         {/* //conteudo daqui será no {children} do componente */}
          {hasError && (
             <div className="alert alert-danger mt-5">
                Usuário ou senha inválidos!
@@ -39,20 +39,40 @@ const Login = () => {
          )}
 
          <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
-            <input
-               type="email"
-               className="form-control input-base margin-bottom-20px"
-               placeholder="Email"
-               name="username"
-               ref={register ({ required: true })}
-            />
-            <input
-               type="password"
-               className="form-control input-base"
-               placeholder="Senha"
-               name="password"
-               ref={register ({ required: true })}
-            />
+            <div className="margin-bottom-20px">
+               <input
+                  type="email"
+                  className= {`form-control input-base ${errors.username ?  'is-invalid' : '' }`} //se houver errors.username, vai inserir a classe is-invalid
+                  placeholder="Email"
+                  name="username"
+                  ref={register({
+                     required: "Campo obrigatório",
+                     pattern: {
+                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                       message: "Email inválido"
+                     }
+                   })}
+               />
+             {errors.username && (
+                  <div className="invalid-feedback d-block">
+                  {errors.username.message} {/* //mensagem de message do input email */}
+               </div>
+             )}
+            </div>
+            <div>
+               <input
+                  type="password"
+                  className= {`form-control input-base ${errors.password ?  'is-invalid' : '' }`}
+                  placeholder="Senha"
+                  name="password"
+                  ref={register({required: "Campo obrigatório" })}
+               />
+             {errors.password && (
+                  <div className="invalid-feedback d-block">
+                  {errors.password.message}
+               </div>
+             )}
+            </div>
             <Link to="/admin/auth/recover" className="login-link-recover">
                Esqueci a senha
             </Link>
