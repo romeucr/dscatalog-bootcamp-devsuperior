@@ -1,10 +1,7 @@
 .auth-container {
    display: flex;
-   padding: 40px 20px 100px 100px;
-}
-
-.auth-info {
-
+   padding: 40px 20px 100px 0;
+   justify-content: center;
 }
 
 .auth-info-title {

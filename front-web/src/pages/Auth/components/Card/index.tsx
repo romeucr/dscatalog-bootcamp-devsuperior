@@ -12,7 +12,7 @@ const AuthCard = ({ title, children }: Props) => {
          <h1 className="auth-card-title">
             {title}
          </h1>
-         {children} {/* componente dinamico, será o formulario */}
+         {children} {/* componente dinamico, será o formulario. Implementado no index do Login */}
       </div>
    )
 }
