@@ -30,7 +30,7 @@ const Routes = () => (
          </Route>
          
          <Redirect from="/admin" to="/admin/products" exact/>
-         <Route path="/admin">
+         <Route path="/admin"> {/* PrivateRoute é um componente criado por nós. Usado para verificar se o usuário está autenticado ou nao. Se nao autenticado, redirect pra login */}
             <Admin />
          </Route>
 
