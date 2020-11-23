@@ -59,7 +59,7 @@ public class ResourceExceptionHandler {
 		err.setMessage(e.getMessage()); 
 		err.setPath(request.getRequestURI());
 		
-		for (FieldError f : e.getBindingResult().getFieldErrors()) { // .getBindResult recupera os erros específicos na eexcecao. .getFieldErrors retorna a lista com os campos dos erros gerados
+		for (FieldError f : e.getBindingResult().getFieldErrors()) { // .getBindResult recupera os erros específicos na excecao. .getFieldErrors retorna a lista com os campos dos erros gerados
 			err.addError(f.getField(), f.getDefaultMessage());
 		}
 		
