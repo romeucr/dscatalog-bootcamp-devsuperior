@@ -7,7 +7,7 @@ import './styles.scss'
 import { makeLogin } from 'core/utils/request';
 import { saveSessionData } from 'core/utils/auth';
 
-type FormData = {
+type FormState = {
    username: string;
    password: string;
 }
@@ -17,14 +17,14 @@ type LocationState = {
 }
 
 const Login = () => {
-   const { register, handleSubmit, errors } = useForm<FormData>(); // initialize the hook form
+   const { register, handleSubmit, errors } = useForm<FormState>(); // initialize the hook form
    const [hasError, setHasError] = useState(false);
    const history = useHistory();
    const location = useLocation<LocationState>();
 
    const { from } = location.state || { from: {pathname: "/admin"} };
 
-   const onSubmit = (data: FormData) => {
+   const onSubmit = (data: FormState) => {
       makeLogin(data)
          .then(response => { //promise tem dois estados, sucesso ou nao. Se sucesso cai no then, se falha cai no catch
             setHasError(false);
