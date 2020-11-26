@@ -50,6 +50,7 @@ const Catalog = () => {
                ))
             )}
          </div>
+         {/* se houver productResponse, mostra paginacao */}
          {productsResponse && (
             <Pagination 
                totalPages={productsResponse.totalPages}
@@ -57,8 +58,6 @@ const Catalog = () => {
                onChange={page => setActivePage(page)}
             />
          )}
-         {/* se houver productResponse, mostra paginacao */}
-
       </div>
    )
 };
