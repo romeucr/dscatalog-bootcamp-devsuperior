@@ -6,9 +6,10 @@ import { Link } from 'react-router-dom'
 
 type Props = {
    product: Product;
+   onRemove: (productId: number) => void //prop do tipo onRemove é uma funcao que recebe um productId numero e nao retorna nada
 }
 
-const Card = ({ product }: Props) => {
+const Card = ({ product, onRemove }: Props) => {
    return (
       <div className="card-base product-card-admin">
          <div className="row">
@@ -45,6 +46,7 @@ const Card = ({ product }: Props) => {
                <button
                   type="button"
                   className="btn btn-outline-danger btn-block border-radius-10"
+                  onClick={() => onRemove(product.id)} //invoca arrow function chamando onRemove passando o id
                >
                   EXCLUIR
                </button>

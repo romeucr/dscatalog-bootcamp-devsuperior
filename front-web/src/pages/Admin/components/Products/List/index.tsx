@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ProductsResponse } from 'core/types/Product';
-import { makeRequest } from 'core/utils/request';
+import { makePrivateRequest, makeRequest } from 'core/utils/request';
+import { toast } from 'react-toastify'; //importado o toastcontainer no App.tsx e o toast aqui, onde será exibido
 import { useHistory } from 'react-router-dom';
 import Card from '../Card';
 import Pagination from 'core/components/Pagination';
@@ -12,9 +13,7 @@ const List = () => {
    const [activePage, setActivePage] = useState(0);
    const history = useHistory();
 
-   //useEffect react hook (funcao) para acessar ciclo de vida do componente. primeiro uma function(), que faz alguma coisa e uma lista [] de dependencias. 
-   //Vazia para realizar alguma coisa assim que o componente iniciar, se tiver algo nos conchetes, ira executar sempre que esse algo for alterado
-   useEffect(() => {
+   const getProducts = useCallback(() => {
       const params = {
          page: activePage,
          linesPerPage: 3, //quantidade de items que mostra na tela
@@ -30,10 +29,30 @@ const List = () => {
          .finally(() => {
             setIsLoading(false); //finalizando o loader
          })
-   }, [activePage]);
+   }, [activePage])
+
+   //useEffect react hook (funcao) para acessar ciclo de vida do componente. primeiro uma function(), que faz alguma coisa e uma lista [] de dependencias. 
+   //Vazia para realizar alguma coisa assim que o componente iniciar, se tiver algo nos conchetes, ira executar sempre que esse algo for alterado
+   useEffect(() => {
+      getProducts()
+   }, [getProducts]);
 
    const handleCreate = () => {
       history.push('/admin/products/create');
+   }
+
+   const onRemove = (productId: number) => {
+      const confirm = window.confirm('Deseja realmente excluir o produto?') //nativo do JS, abre uma caixa de dialogo no navegador com aceitar(true) ou cancelar(false).
+      if (confirm) {
+         makePrivateRequest({ url: `/products/${productId}`, method: 'DELETE' })
+            .then(() => {
+               toast.info('Produto excluído com sucesso!')
+               getProducts()
+            })
+            .catch(() => {
+               toast.error('Erro ao excluir produto!')
+            })
+      }
    }
 
    return (
@@ -43,16 +62,16 @@ const List = () => {
          </button>
          <div className="admin-list-container">
             {productsResponse?.content.map(product => (
-               <Card product={product} key={product.id}/>
+               <Card product={product} key={product.id} onRemove={onRemove} />
             ))}
-                     {/* se houver productResponse, mostra paginacao */}
-         {productsResponse && (
-            <Pagination 
-               totalPages={productsResponse.totalPages}
-               activePage={activePage}
-               onChange={page => setActivePage(page)}
-            />
-         )}
+            {/* se houver productResponse, mostra paginacao */}
+            {productsResponse && (
+               <Pagination
+                  totalPages={productsResponse.totalPages}
+                  activePage={activePage}
+                  onChange={page => setActivePage(page)}
+               />
+            )}
          </div>
       </div>
    )
