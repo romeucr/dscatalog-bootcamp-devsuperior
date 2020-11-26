@@ -12,13 +12,14 @@ const List = () => {
    const [activePage, setActivePage] = useState(0);
    const history = useHistory();
 
-   console.log(productsResponse)
    //useEffect react hook (funcao) para acessar ciclo de vida do componente. primeiro uma function(), que faz alguma coisa e uma lista [] de dependencias. 
    //Vazia para realizar alguma coisa assim que o componente iniciar, se tiver algo nos conchetes, ira executar sempre que esse algo for alterado
    useEffect(() => {
       const params = {
          page: activePage,
-         linesPerPage: 3 //quantidade de items que mostra na tela
+         linesPerPage: 3, //quantidade de items que mostra na tela
+         direction: 'DESC',
+         orderBy: 'id'
       }
 
       //Acessando a API: em package.json foi colocada a config "proxy": "http://localhost:8080", para evitar o problema de CORS ao fazer as requisicoes a API 

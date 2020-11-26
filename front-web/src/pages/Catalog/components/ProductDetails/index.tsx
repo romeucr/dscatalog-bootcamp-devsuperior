@@ -12,7 +12,7 @@ type ParamsType = {
 }
 
 const ProductDetails = () => {
-   const { productId } = useParams<ParamsType>();
+   const { productId } = useParams<ParamsType>(); //atraves do useParams é possivel capturar o id da URL
    const [product, setProduct] = useState<Product>();
    const [isLoading, setIsLoading] = useState(false);
 

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify'; //importado o toastcontainer no App.tsx e o toast aqui, onde será exibido
-import { makePrivateRequest } from 'core/utils/request';
+import { makePrivateRequest, makeRequest } from 'core/utils/request';
 import BaseForm from '../../BaseForm';
 import './styles.scss';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 type FormState = {
    name: string;
@@ -13,34 +13,59 @@ type FormState = {
    imgUrl: string;
 }
 
+type ParamsType = {
+   productId: string;
+}
+
 const Form = () => {
 
-   const { register, handleSubmit, errors } = useForm<FormState>();
+   const { register, handleSubmit, errors, setValue } = useForm<FormState>(); //através do setCalue é possivel setar os campos do formulario dinamicamente
    const history = useHistory();
+   const { productId } = useParams<ParamsType>(); //atraves do useParams é possivel capturar o id da URL
+   const isEditing = productId !== 'create' //se o productid for um número e nao 'create', isEditing = true
+   const formTitle = isEditing ? 'EDITAR PRODUTO' : 'CADASTRAR PRODUTO'
+
+   useEffect(() => {
+      if (isEditing) {
+         makeRequest({ url: `/products/${productId}` })
+            .then(response => { //set os valores dos campos através do atributo name de cada um
+               setValue('name', response.data.name)
+               setValue('price', response.data.price)
+               setValue('description', response.data.description)
+               setValue('imgUrl', response.data.imgUrl)
+            })
+      }
+   }, [productId, isEditing, setValue]);
 
    const onSubmit = (data: FormState) => {
       //quando é feito o onSubmit do form, os dados vao para variavel data e é feito o submit ao backend. makeRequest é o feito em core/utils
-      makePrivateRequest({ url: '/products', method: 'POST', data })
+      makePrivateRequest({
+         url: isEditing ? `/products/${productId}` : '/products', //se estiver editando, vai pra /productId, senao /product
+         method: isEditing ? 'PUT' : 'POST',
+         data
+      })
          .then(() => {
-            toast.info('Produto salvo com sucesso!')
+            toast.info(isEditing ? 'Produto editado   com sucesso!' : 'Produto salvo com sucesso!')
             history.push('/admin/products')
          })
-         .catch (() => {
-            toast.error('Erro ao salvar produto!')
+         .catch(() => {
+            toast.error(isEditing ? 'Erro ao editar produto!' : 'Erro ao salvar produto!')
          })
    }
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-         <BaseForm title="CADASTRAR UM PRODUTO">
+         <BaseForm
+            title={formTitle}
+         >
             <div className="row">
                <div className="col-6">
                   <div className="margin-bottom-20px">
                      <input
                         ref={register({
                            required: "Campo obrigatório",
-                           minLength: { value: 5, message: "Nome do produto deve no mínimo 5 caracteres"},
-                           maxLength: { value: 60, message: "Nome do produto deve ter no máximo 60 caracteres"}
+                           minLength: { value: 5, message: "Nome do produto deve no mínimo 5 caracteres" },
+                           maxLength: { value: 60, message: "Nome do produto deve ter no máximo 60 caracteres" }
                         })}
                         name="name"
                         type="text"
