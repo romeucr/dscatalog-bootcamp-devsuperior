@@ -15,7 +15,6 @@ const Catalog = () => {
    //para executar algo quando o componente iniciar (abrir pagina catalog).
    const [productsResponse, setProductsResponse] = useState<ProductsResponse>();
    const [isLoading, setIsLoading] = useState(false);
-
    const [activePage, setActivePage] = useState(0);
 
    //useEffect react hook (funcao) para acessar ciclo de vida do componente. primeiro uma function(), que faz alguma coisa e uma lista [] de dependencias. 

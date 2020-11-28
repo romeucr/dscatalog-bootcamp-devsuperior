@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'react-toastify'; //importado o toastcontainer no App.tsx e o toast aqui, onde será exibido
+import Select from 'react-select';
 import { makePrivateRequest, makeRequest } from 'core/utils/request';
 import BaseForm from '../../BaseForm';
 import './styles.scss';
 import { useHistory, useParams } from 'react-router-dom';
+import { Category } from 'core/types/Product';
 
 type FormState = {
    name: string;
    price: string;
    description: string;
    imgUrl: string;
+   categories: Category[];
 }
 
 type ParamsType = {
@@ -19,9 +22,11 @@ type ParamsType = {
 
 const Form = () => {
 
-   const { register, handleSubmit, errors, setValue } = useForm<FormState>(); //através do setCalue é possivel setar os campos do formulario dinamicamente
+   const { register, handleSubmit, errors, setValue, control } = useForm<FormState>(); //através do setCalue é possivel setar os campos do formulario dinamicamente
    const history = useHistory();
    const { productId } = useParams<ParamsType>(); //atraves do useParams é possivel capturar o id da URL
+   const [isLoadingCategories, setIsloadingCategories] = useState(false)
+   const [categories, setCategories] = useState<Category[]>([]);
    const isEditing = productId !== 'create' //se o productid for um número e nao 'create', isEditing = true
    const formTitle = isEditing ? 'EDITAR PRODUTO' : 'CADASTRAR PRODUTO'
 
@@ -33,9 +38,18 @@ const Form = () => {
                setValue('price', response.data.price)
                setValue('description', response.data.description)
                setValue('imgUrl', response.data.imgUrl)
+               setValue('categories', response.data.categories)
             })
       }
    }, [productId, isEditing, setValue]);
+
+   useEffect(() => {
+      setIsloadingCategories(true)
+      makeRequest({ url: `/categories` })
+         .then(response => setCategories(response.data.content))
+         .finally(() => setIsloadingCategories(false))
+
+   }, []);
 
    const onSubmit = (data: FormState) => {
       //quando é feito o onSubmit do form, os dados vao para variavel data e é feito o submit ao backend. makeRequest é o feito em core/utils
@@ -75,6 +89,26 @@ const Form = () => {
                      {errors.name && (
                         <div className="invalid-feedback d-block">
                            {errors.name.message}
+                        </div>
+                     )}
+                  </div>
+                  <div className="margin-bottom-20px ">
+                     <Controller //do react-hook-form para integrar o react-select abaixo
+                        name="categories"
+                        rules={{ required: true }} //para definir validacao
+                        control={control}
+                        isLoading={isLoadingCategories}
+                        as={Select}  //componente do react-select. isMulti indica que pode selecionar varias opcoes, nao só uma (padrao) 
+                        options={categories} //tem que se o mesmo nome do backend
+                        getOptionLabel={(option: Category) => option.name} //para mostrar as informacoes o react-select precisa de um label e value(este é o enviado ao server). Setar esses dois gets para isso
+                        getOptionValue={(option: Category) => String(option.id)} //transforma o id que é number para string.
+                        isMulti
+                        classNamePrefix="categories-select" //para poder estilizar com css. adiciona o prefixo inserido. Inspecionar o componente no browser para saber o nome completo da classe, por exemplo, categories-select__control
+                        placeholder="Categorias"
+                     />
+                     {errors.categories && (
+                        <div className="invalid-feedback d-block">
+                           Campo Obrigatório {/* //como é a única coisa sendo tratada (campo required) a mensagem está hard coded */}
                         </div>
                      )}
                   </div>
